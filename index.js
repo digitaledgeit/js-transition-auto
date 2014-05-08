@@ -2,6 +2,19 @@
 //Source adapted from http://n12v.com/css-transition-to-from-auto/](http://n12v.com/css-transition-to-from-auto/
 
 /**
+ * Gets the computed element styles
+ * @param   {HTMLElement} element
+ * @returns {object}
+ */
+function getStyle(element) {
+  if (window.getComputedStyle) {
+    return window.getComputedStyle(element);
+  } else {
+    return element.currentStyle; //IE8
+  }
+}
+
+/**
  * Gets the name of the property used to force a repaint of CSS
  * @param   {string} property
  * @returns {string}
@@ -25,7 +38,7 @@ function transitionToSize(element, property, size) {
   }
 
   //change width/height from auto or whatever size we're at to the fixed amount
-  element.style[property] = window.getComputedStyle(element)[property];
+  element.style[property] = getStyle(element)[property];
   element[repaintProperty]; // force repaint
 
   //set the width/height to the new size to start the transition
@@ -46,7 +59,7 @@ function transitionToAuto(element, property) {
   element.style.transitionProperty = 'none';
   currentSize = element.style[property];
   element.style[property] = 'auto';
-  finalSize = getComputedStyle(element)[property];
+  finalSize = getStyle(element)[property];
   element.style[property] = currentSize;
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
