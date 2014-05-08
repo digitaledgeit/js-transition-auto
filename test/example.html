@@ -8,7 +8,9 @@
             overflow: hidden;
             height: auto;
             background-color: darkseagreen;
+            -moz-transition: height 1.25s;
             -webkit-transition: height 1.25s;
+            transition: height 1.25s;
         }
 
         .padder {
@@ -35,6 +37,13 @@
     </script>
 </head>
 <body>
+
+<p>
+    Before clicking the button run:
+    <code>
+         component install --dev && component build --dev
+    </code>
+</p>
 
 <button onclick="toggle();">Hide/show the thing</button>
 
