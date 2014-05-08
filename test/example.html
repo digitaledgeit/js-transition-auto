@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+
+        .thing {
+            overflow: hidden;
+            height: auto;
+            background-color: darkseagreen;
+            -webkit-transition: height 1.25s;
+        }
+
+        .padder {
+            padding: 1em;
+        }
+
+    </style>
+    <script src="../build/build.js"></script>
+    <script>
+
+        var transition = require('transition-auto');
+
+        function toggle() {
+            var thing = document.querySelector('.thing');
+            if (thing.classList.contains('is-invisible')) {
+                transition(thing, 'height', 'auto');
+                thing.classList.remove('is-invisible');
+            } else {
+                transition(thing, 'height', 0);
+                thing.classList.add('is-invisible');
+            }
+        }
+
+    </script>
+</head>
+<body>
+
+<button onclick="toggle();">Hide/show the thing</button>
+
+<div class="thing">
+    <div class="padder">
+        This is a thing!<br/>
+        It spans over multiple lines.
+    </div>
+</div>
+
+</body>
+</html>
