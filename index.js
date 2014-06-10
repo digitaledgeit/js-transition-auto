@@ -56,7 +56,7 @@ function transitionToAuto(element, property) {
 
   //calculate what the width/height of the element will be without transitioning
   var currentSize, finalSize;
-  element.style.transitionProperty = 'none';
+  element.style.transitionProperty = 'none'; //disable transitions
   currentSize = element.style[property];
   element.style[property] = 'auto';
   finalSize = getStyle(element)[property];
@@ -76,7 +76,11 @@ function transitionToAuto(element, property) {
   //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
   element.addEventListener('transitionend', function transitionEnd(event) {
     if (event.propertyName == property) {
+      element.style.transitionProperty = 'none'; //disable transitions
+      element[repaintProperty]; // force repaint
       element.style[property] = 'auto';
+      element[repaintProperty]; // force repaint
+      element.style.transitionProperty = '';  //enable transitions
       element.removeEventListener('transitionend', transitionEnd, false)
     }
   }, false);
