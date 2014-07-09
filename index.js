@@ -45,7 +45,6 @@ function transitionToSize(element, property, size) {
   element.style.transitionProperty = ''; //enable transitions
 
   //set the width/height to the new size to start the transition
-  console.log('setting size:', size);
   element.style[property] = size;
 
 }
