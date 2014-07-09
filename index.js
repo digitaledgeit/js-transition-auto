@@ -36,12 +36,16 @@ function transitionToSize(element, property, size) {
   if (element.style[property] === size) {
     return;
   }
-
+  
   //change width/height from auto or whatever size we're at to the fixed amount
-  element.style[property] = getStyle(element)[property];
+  var currentSize = getStyle(element)[property];
+  element.style.transitionProperty = 'none'; //disable transitions
+  element.style[property] = currentSize;
   element[repaintProperty]; // force repaint
+  element.style.transitionProperty = ''; //enable transitions
 
   //set the width/height to the new size to start the transition
+  console.log('setting size:', size);
   element.style[property] = size;
 
 }
