@@ -17,14 +17,38 @@
             padding: 1em;
         }
 
+        .no-transitions {
+            transition: none;
+        }
+
     </style>
+</head>
+<body>
+
+    <p>
+        Before clicking the button run:
+        <code>
+             component install --dev && component build --dev
+        </code>
+    </p>
+
+    <button onclick="toggleHeight();">Hide/show the thing</button>
+    <button onclick="toggleTransitions();">Disable/Enable the transitions</button>
+
+    <div class="thing">
+        <div class="padder">
+            This is a thing!<br/>
+            It spans over multiple lines.
+        </div>
+    </div>
     <script src="../build/build.js"></script>
     <script>
 
         var transition = require('transition-auto');
 
-        function toggle() {
-            var thing = document.querySelector('.thing');
+        var thing = document.querySelector('.thing');
+
+        function toggleHeight() {
             if (thing.classList.contains('is-invisible')) {
                 transition(thing, 'height', 'auto', function() {
                     console.log('transition-finished');
@@ -38,25 +62,14 @@
             }
         }
 
+        function toggleTransitions() {
+            if (thing.classList.contains('no-transitions')) {
+                thing.classList.remove('no-transitions');
+            } else {
+                thing.classList.add('no-transitions');
+            }
+        }
+
     </script>
-</head>
-<body>
-
-<p>
-    Before clicking the button run:
-    <code>
-         component install --dev && component build --dev
-    </code>
-</p>
-
-<button onclick="toggle();">Hide/show the thing</button>
-
-<div class="thing">
-    <div class="padder">
-        This is a thing!<br/>
-        It spans over multiple lines.
-    </div>
-</div>
-
 </body>
 </html>

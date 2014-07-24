@@ -1,5 +1,6 @@
-
 //Source adapted from http://n12v.com/css-transition-to-from-auto/](http://n12v.com/css-transition-to-from-auto/
+
+var afterTransition = require('after-transition');
 
 /**
  * Gets the computed element styles
@@ -45,13 +46,9 @@ function transitionToSize(element, property, size, callback) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
-  //after the transition is finished call the callack
-  element.addEventListener('transitionend', function transitionEnd(event) {
-    if (event.propertyName == property) {
-      element.removeEventListener('transitionend', transitionEnd, false)
-      if (callback) callback(); //call the callback
-    }
-  }, false);
+  afterTransition.once(element, function transitionEnd() {
+    if (callback) callback(); //call the callback
+  });
 
   //set the width/height to the new size to start the transition
   element.style[property] = size;
@@ -83,17 +80,15 @@ function transitionToAuto(element, property, callback) {
   }
 
   //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
-  element.addEventListener('transitionend', function transitionEnd(event) {
-    if (event.propertyName == property) {
-      element.style.transitionProperty = 'none'; //disable transitions
-      element[repaintProperty]; // force repaint
-      element.style[property] = 'auto';
-      element[repaintProperty]; // force repaint
-      element.style.transitionProperty = '';  //enable transitions
-      element.removeEventListener('transitionend', transitionEnd, false)
-      if (callback) callback(); //call the callback
-    }
-  }, false);
+  afterTransition.once(element, function transitionEnd() {
+    element.style.transitionProperty = 'none'; //disable transitions
+    element[repaintProperty]; // force repaint
+    element.style[property] = 'auto';
+    element[repaintProperty]; // force repaint
+    element.style.transitionProperty = '';  //enable transitions
+    element.removeEventListener('transitionend', transitionEnd, false)
+    if (callback) callback(); //call the callback
+  });
 
   //set the width/height of the element to the calculated width/height to start the transition
   element.style[property] = finalSize;

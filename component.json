@@ -1,4 +1,7 @@
 {
   "name": "transition-auto",
-  "scripts": ["index.js"]
+  "scripts": ["index.js"],
+  "dependencies": {
+    "anthonyshort/after-transition": "0.0.4"
+  }
 }
