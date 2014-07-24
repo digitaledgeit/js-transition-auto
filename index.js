@@ -28,8 +28,9 @@ function getRepaintProperty(property) {
  * @param {HTMLElement} element
  * @param {string}      property
  * @param {string}      size
+ * @param {function}    [callback]
  */
-function transitionToSize(element, property, size) {
+function transitionToSize(element, property, size, callback) {
   var repaintProperty = getRepaintProperty(property);
 
   //don't bother transitioning if we're already there or are mid transition
@@ -44,6 +45,14 @@ function transitionToSize(element, property, size) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
+  //after the transition is finished call the callack
+  element.addEventListener('transitionend', function transitionEnd(event) {
+    if (event.propertyName == property) {
+      element.removeEventListener('transitionend', transitionEnd, false)
+      if (callback) callback(); //call the callback
+    }
+  }, false);
+
   //set the width/height to the new size to start the transition
   element.style[property] = size;
 
@@ -53,8 +62,9 @@ function transitionToSize(element, property, size) {
  * Transitions to auto
  * @param {HTMLElement} element
  * @param {string}      property
+ * @param {function}    [callback]
  */
-function transitionToAuto(element, property) {
+function transitionToAuto(element, property, callback) {
   var repaintProperty = getRepaintProperty(property);
 
   //calculate what the width/height of the element will be without transitioning
@@ -72,10 +82,6 @@ function transitionToAuto(element, property) {
     return;
   }
 
-  //set the width/height of the element to the calculated width/height to start the transition
-  element.style[property] = finalSize;
-  element[repaintProperty]; // force repaint
-
   //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
   element.addEventListener('transitionend', function transitionEnd(event) {
     if (event.propertyName == property) {
@@ -85,21 +91,26 @@ function transitionToAuto(element, property) {
       element[repaintProperty]; // force repaint
       element.style.transitionProperty = '';  //enable transitions
       element.removeEventListener('transitionend', transitionEnd, false)
+      if (callback) callback(); //call the callback
     }
   }, false);
 
+  //set the width/height of the element to the calculated width/height to start the transition
+  element.style[property] = finalSize;
+  element[repaintProperty]; // force repaint
+
 }
 
-module.exports = function(element, cssprop, tosize) {
+module.exports = function(element, cssprop, tosize, callback) {
 
   if (cssprop !== 'width' && cssprop !== 'height') {
     throw new Error('Cannot transition "'+cssprop+'" property');
   }
 
   if (tosize === 'auto') {
-    transitionToAuto(element, cssprop, tosize);
+    transitionToAuto(element, cssprop, callback);
   } else {
-    transitionToSize(element, cssprop, tosize);
+    transitionToSize(element, cssprop, tosize, callback);
   }
 
 };
