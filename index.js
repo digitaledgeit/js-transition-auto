@@ -34,15 +34,23 @@ function getRepaintProperty(property) {
 function transitionToSize(element, property, size, callback) {
   var repaintProperty = getRepaintProperty(property);
 
+  //browser returns sizes in px so transform the user's size too
+  if (size == '0') {
+    size = '0px';
+  }
+
+  //get the current computed size
+  var currentComputedSize = getStyle(element)[property];
+
   //don't bother transitioning if we're already there or are mid transition
-  if (element.style[property] === size) {
+  if (element.style[property] === size || currentComputedSize === size) {
+    if (callback) callback(); //call the callback //TODO: if we're mid transition we probably shouldn't call the callback until the transition ends???
     return;
   }
-  
+
   //change width/height from auto or whatever size we're at to the fixed amount
-  var currentSize = getStyle(element)[property];
   element.style.transitionProperty = 'none'; //disable transitions
-  element.style[property] = currentSize;
+  element.style[property] = currentComputedSize;
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
@@ -65,7 +73,8 @@ function transitionToAuto(element, property, callback) {
   var repaintProperty = getRepaintProperty(property);
 
   //calculate what the width/height of the element will be without transitioning
-  var currentSize, finalSize;
+  var currentSize, currentComputedSize, finalSize;
+  currentComputedSize = getStyle(element)[property];
   element.style.transitionProperty = 'none'; //disable transitions
   currentSize = element.style[property];
   element.style[property] = 'auto';
@@ -75,7 +84,8 @@ function transitionToAuto(element, property, callback) {
   element.style.transitionProperty = ''; //enable transitions
 
   //don't bother transitioning if we're already there or are mid transition (it'll just cause issues if its run again)
-  if (element.style[property] === 'auto' || element.style[property] === finalSize) {
+  if ((element.style[property] === '' && currentComputedSize === finalSize) || element.style[property] === 'auto' || element.style[property] === finalSize) {
+    if (callback) callback(); //call the callback //TODO: if we're mid transition we probably shouldn't call the callback until the transition ends???
     return;
   }
 
