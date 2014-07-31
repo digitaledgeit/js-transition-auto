@@ -3,6 +3,16 @@
 var afterTransition = require('after-transition');
 
 /**
+ * Get whether transitions are set on the element
+ * @param   {HTMLElement} element
+ * @returns {Boolean}
+ */
+function hazTransitions(element) {
+  var duration = window.getComputedStyle(element).transitionDuration;
+  return duration !== '' && parseFloat(duration) !== 0;
+}
+
+/**
  * Gets the computed element styles
  * @param   {HTMLElement} element
  * @returns {object}
@@ -54,13 +64,25 @@ function transitionToSize(element, property, size, callback) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
-  afterTransition.once(element, function transitionEnd() {
+  if (hazTransitions(element)) {
+
+    afterTransition.once(element, function transitionEnd() {
+      if (callback) callback(); //call the callback
+    });
+
+    //set the width/height to the new size to start the transition
+    element.style[property] = size;
+    element[repaintProperty]; // force repaint
+
+  } else {
+
+    //set the width/height to the new size to start the transition
+    element.style[property] = size;
+    element[repaintProperty]; // force repaint
+
     if (callback) callback(); //call the callback
-  });
 
-  //set the width/height to the new size to start the transition
-  element.style[property] = size;
-
+  }
 }
 
 /**
@@ -89,20 +111,32 @@ function transitionToAuto(element, property, callback) {
     return;
   }
 
-  //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
-  afterTransition.once(element, function transitionEnd() {
-    element.style.transitionProperty = 'none'; //disable transitions
-    element[repaintProperty]; // force repaint
-    element.style[property] = 'auto';
-    element[repaintProperty]; // force repaint
-    element.style.transitionProperty = '';  //enable transitions
-    element.removeEventListener('transitionend', transitionEnd, false)
-    if (callback) callback(); //call the callback
-  });
+  if (hazTransitions(element)) {
 
-  //set the width/height of the element to the calculated width/height to start the transition
-  element.style[property] = finalSize;
-  element[repaintProperty]; // force repaint
+    //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
+    afterTransition.once(element, function transitionEnd() {
+      element.style.transitionProperty = 'none'; //disable transitions
+      element[repaintProperty]; // force repaint
+      element.style[property] = 'auto';
+      element[repaintProperty]; // force repaint
+      element.style.transitionProperty = '';  //enable transitions
+      element.removeEventListener('transitionend', transitionEnd, false)
+      if (callback) callback(); //call the callback
+    });
+
+    //set the width/height of the element to the calculated width/height to start the transition
+    element.style[property] = finalSize;
+    element[repaintProperty]; // force repaint
+
+  } else {
+
+    //set the width/height of the element to the calculated width/height to start the transition
+    element.style[property] = finalSize;
+    element[repaintProperty]; // force repaint
+
+    if (callback) callback(); //call the callback
+
+  }
 
 }
 
