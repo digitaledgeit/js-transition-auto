@@ -131,7 +131,7 @@ function transitionToAuto(element, property, callback) {
   } else {
 
     //set the width/height of the element to the calculated width/height to start the transition
-    element.style[property] = finalSize;
+    element.style[property] = 'auto';
     element[repaintProperty]; // force repaint
 
     if (callback) callback(); //call the callback

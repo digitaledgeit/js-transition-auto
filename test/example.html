@@ -51,11 +51,13 @@
         function toggleHeight() {
             if (thing.classList.contains('is-invisible')) {
                 transition(thing, 'height', 'auto', function() {
+                    console.log(thing.style.height);
                     console.log('transition-finished');
                 });
                 thing.classList.remove('is-invisible');
             } else {
                 transition(thing, 'height', 0, function() {
+                    console.log(thing.style.height);
                     console.log('transition-finished');
                 });
                 thing.classList.add('is-invisible');
