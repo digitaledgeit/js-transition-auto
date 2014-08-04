@@ -3,16 +3,6 @@
 var afterTransition = require('after-transition');
 
 /**
- * Get whether transitions are set on the element
- * @param   {HTMLElement} element
- * @returns {Boolean}
- */
-function hazTransitions(element) {
-  var duration = window.getComputedStyle(element).transitionDuration;
-  return duration !== '' && parseFloat(duration) !== 0;
-}
-
-/**
  * Gets the computed element styles
  * @param   {HTMLElement} element
  * @returns {object}
@@ -23,6 +13,17 @@ function getStyle(element) {
   } else {
     return element.currentStyle; //IE8
   }
+}
+
+/**
+ * Get whether transitions are set on the element
+ * @param   {HTMLElement} element
+ * @returns {Boolean}
+ */
+function hazTransitions(element) {
+  var style = getStyle(element)
+  var duration = style.transitionDuration;
+  return duration !== '' && parseFloat(duration) !== 0;
 }
 
 /**

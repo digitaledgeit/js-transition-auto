@@ -3,5 +3,10 @@
   "scripts": ["index.js"],
   "dependencies": {
     "anthonyshort/after-transition": "0.0.4"
+  },
+  "development": {
+    "dependencies": {
+      "nib-components/shims": "*"
+    }
   }
 }
