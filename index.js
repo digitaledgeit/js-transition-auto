@@ -65,7 +65,7 @@ function transitionToSize(element, property, size, callback) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
-  if (hazTransitions(element)) {
+  if (hazTransitions(element) && element[repaintProperty] !== 0) { //don't use transitions if the element is hidden (offset width/height is 0)
 
     afterTransition.once(element, function transitionEnd() {
       if (callback) callback(); //call the callback
@@ -112,7 +112,7 @@ function transitionToAuto(element, property, callback) {
     return;
   }
 
-  if (hazTransitions(element)) {
+  if (hazTransitions(element) && element[repaintProperty] !== 0) { //don't use transitions if the element is hidden (offset width/height is 0)
 
     //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
     afterTransition.once(element, function transitionEnd() {
