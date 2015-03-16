@@ -36,6 +36,15 @@ function getRepaintProperty(property) {
 }
 
 /**
+ * Get whether the element is hidden i.e. a parent element has `display:none`
+ * @param   {HTMLElement} element
+ * @returns {boolean}
+ */
+function isHidden(element) {
+  return element.offsetParent === null || (element.offsetWidth === 0 && element.offsetHeight === 0);
+}
+
+/**
  * Transitions to a specific size
  * @param {HTMLElement} element
  * @param {string}      property
@@ -65,7 +74,7 @@ function transitionToSize(element, property, size, callback) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
-  if (hazTransitions(element) && (element.offsetWidth !== 0 || element.offsetHeight !== 0)) { //don't use transitions if the element is hidden (offset width/height is 0)
+  if (hazTransitions(element) && !isHidden(element)) { //don't use transitions if the element is hidden (offset width/height is 0)
 
     afterTransition.once(element, function transitionEnd() {
       if (callback) callback(); //call the callback
@@ -112,7 +121,7 @@ function transitionToAuto(element, property, callback) {
     return;
   }
 
-  if (hazTransitions(element) && (element.offsetWidth !== 0 || element.offsetHeight !== 0)) { //don't use transitions if the element is hidden (offset width/height is 0)
+  if (hazTransitions(element) && !isHidden(element)) { //don't use transitions if the element is hidden
 
     //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
     afterTransition.once(element, function transitionEnd() {

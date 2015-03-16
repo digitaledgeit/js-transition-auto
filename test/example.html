@@ -4,7 +4,7 @@
     <title></title>
     <style>
 
-        .thing {
+        .thing1, .thing2 {
             overflow: hidden;
             height: auto;
             background-color: darkseagreen;
@@ -32,46 +32,88 @@
         </code>
     </p>
 
-    <button onclick="toggleHeight();">Hide/show the thing</button>
-    <button onclick="toggleTransitions();">Disable/Enable the transitions</button>
+    <section>
 
-    <div class="thing">
-        <div class="padder">
-            This is a thing!<br/>
-            It spans over multiple lines.
+        <button class="thing1-toggle-height">Hide/show the thing</button>
+        <button class="thing1-toggle-transitions">Disable/Enable transitions</button>
+
+        <div class="thing1">
+            <div class="padder">
+                This is a thing!<br/>
+                It spans over multiple lines.
+            </div>
         </div>
-    </div>
+
+    </section>
+
+    <hr/>
+
+    <section>
+
+        <button class="thing2-toggle-height">Hide/show the hidden thing</button>
+        <button class="thing2-toggle-transitions">Disable/Enable transitions on the hidden thing</button>
+
+        <div style="display:none">
+            <div class="thing2">
+                <div class="padder">
+                    This is a thing!<br/>
+                    It spans over multiple lines.
+                </div>
+            </div>
+        </div>
+
+    </section>
+
     <script src="../build/build.js"></script>
     <script>
         require('shims');
 
         var transition = require('transition-auto');
 
-        var thing = document.querySelector('.thing');
+        function bind(thing, toggleHeightEl, toggleTransitionsEl) {
 
-        function toggleHeight() {
-            if (thing.classList.contains('is-invisible')) {
-                transition(thing, 'height', 'auto', function() {
-                    console.log(thing.style.height);
-                    console.log('transition-finished');
-                });
-                thing.classList.remove('is-invisible');
-            } else {
-                transition(thing, 'height', 0, function() {
-                    console.log(thing.style.height);
-                    console.log('transition-finished');
-                });
-                thing.classList.add('is-invisible');
+            function toggleHeight() {
+                if (thing.classList.contains('is-invisible')) {
+                    transition(thing, 'height', 'auto', function() {
+                        console.log(thing.style.height);
+                        console.log('transition-to-auto-finished');
+                    });
+                    thing.classList.remove('is-invisible');
+                } else {
+                    transition(thing, 'height', 0, function() {
+                        console.log(thing.style.height);
+                        console.log('transition-to-0-finished');
+                    });
+                    thing.classList.add('is-invisible');
+                }
             }
+
+            function toggleTransitions() {
+                if (thing.classList.contains('no-transitions')) {
+                    thing.classList.remove('no-transitions');
+                } else {
+                    thing.classList.add('no-transitions');
+                }
+            }
+
+            toggleHeightEl.addEventListener('click', toggleHeight);
+            toggleTransitionsEl.addEventListener('click', toggleTransitions);
+
         }
 
-        function toggleTransitions() {
-            if (thing.classList.contains('no-transitions')) {
-                thing.classList.remove('no-transitions');
-            } else {
-                thing.classList.add('no-transitions');
-            }
-        }
+        bind(
+            document.querySelector('.thing1'),
+            document.querySelector('.thing1-toggle-height'),
+            document.querySelector('.thing1-toggle-transitions')
+        );
+
+        bind(
+                document.querySelector('.thing2'),
+                document.querySelector('.thing2-toggle-height'),
+                document.querySelector('.thing2-toggle-transitions')
+        );
+
+
 
     </script>
 </body>
