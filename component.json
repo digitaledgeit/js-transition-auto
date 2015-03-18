@@ -2,11 +2,13 @@
   "name": "transition-auto",
   "scripts": ["index.js"],
   "dependencies": {
-    "anthonyshort/after-transition": "0.0.4"
+    "anthonyshort/after-transition": "0.0.4",
+    "digitaledgeit/js-transition-info": "~0.1.0"
   },
   "development": {
     "dependencies": {
-      "nib-components/shims": "*"
+      "nib-components/shims": "*",
+      "component/assert": "*"
     }
   }
 }

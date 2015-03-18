@@ -4,7 +4,7 @@
     <title></title>
     <style>
 
-        .thing1, .thing2 {
+        .thing1, .thing2, .thing3 {
             overflow: hidden;
             height: auto;
             background-color: darkseagreen;
@@ -15,6 +15,10 @@
 
         .padder {
             padding: 1em;
+        }
+
+        .hidden {
+            display: none;
         }
 
         .no-transitions {
@@ -50,11 +54,31 @@
 
     <section>
 
+        <p>A hidden thing...</p>
+
         <button class="thing2-toggle-height">Hide/show the hidden thing</button>
         <button class="thing2-toggle-transitions">Disable/Enable transitions on the hidden thing</button>
 
         <div style="display:none">
             <div class="thing2">
+                <div class="padder">
+                    This is a thing!<br/>
+                    It spans over multiple lines.
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section>
+
+        <p>A thing hidden during transition...</p>
+
+        <button class="thing3-toggle-height">Hide/show the hidden thing</button>
+        <button class="thing3-toggle-transitions">Disable/Enable transitions on the hidden thing</button>
+
+        <div class="thing3-parent">
+            <div class="thing3">
                 <div class="padder">
                     This is a thing!<br/>
                     It spans over multiple lines.
@@ -108,10 +132,22 @@
         );
 
         bind(
-                document.querySelector('.thing2'),
-                document.querySelector('.thing2-toggle-height'),
-                document.querySelector('.thing2-toggle-transitions')
+            document.querySelector('.thing2'),
+            document.querySelector('.thing2-toggle-height'),
+            document.querySelector('.thing2-toggle-transitions')
         );
+
+        bind(
+            document.querySelector('.thing3'),
+            document.querySelector('.thing3-toggle-height'),
+            document.querySelector('.thing3-toggle-transitions')
+        );
+
+        document.querySelector('.thing3-toggle-height').addEventListener('click', function(event) {
+            setTimeout(function() {
+                document.querySelector('.thing3-parent').classList.toggle('hidden');
+            }, 250);
+        });
 
 
 

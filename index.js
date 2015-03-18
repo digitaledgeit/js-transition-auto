@@ -1,11 +1,12 @@
 //Source adapted from http://n12v.com/css-transition-to-from-auto/](http://n12v.com/css-transition-to-from-auto/
 
 var afterTransition = require('after-transition');
+var transition = require('transition-info');
 
 /**
  * Gets the computed element styles
  * @param   {HTMLElement} element
- * @returns {object}
+ * @returns {CSSStyleDeclaration}
  */
 function getStyle(element) {
   if (window.getComputedStyle) {
@@ -17,13 +18,12 @@ function getStyle(element) {
 
 /**
  * Get whether transitions are set on the element
- * @param   {HTMLElement} element
- * @returns {Boolean}
+ * @param   {CSSStyleDeclaration} style
+ * @param   {string}              property
+ * @returns {boolean}
  */
-function hazTransitions(element) {
-  var style = getStyle(element)
-  var duration = style.transitionDuration;
-  return duration !== '' && parseFloat(duration) !== 0;
+function hazTransitions(style, property) {
+  return transition(style).duration(property) > 0;
 }
 
 /**
@@ -60,10 +60,11 @@ function transitionToSize(element, property, size, callback) {
   }
 
   //get the current computed size
-  var currentComputedSize = getStyle(element)[property];
+  var currentComputedStyle = getStyle(element);
+  var currentComputedSize = currentComputedStyle[property];
 
   //don't bother transitioning if we're already there or are mid transition
-  if (element.style[property] === size || currentComputedSize === size) {
+  if (!isHidden(element) && (element.style[property] === size || currentComputedSize === size)) {
     if (callback) callback(); //call the callback //TODO: if we're mid transition we probably shouldn't call the callback until the transition ends???
     return;
   }
@@ -74,11 +75,20 @@ function transitionToSize(element, property, size, callback) {
   element[repaintProperty]; // force repaint
   element.style.transitionProperty = ''; //enable transitions
 
-  if (hazTransitions(element) && !isHidden(element)) { //don't use transitions if the element is hidden (offset width/height is 0)
+  if (hazTransitions(currentComputedStyle, property) && !isHidden(element)) { //don't use transitions if the element is hidden (offset width/height is 0)
+    var timeout;
 
     afterTransition.once(element, function transitionEnd() {
+      window.clearTimeout(timeout);
       if (callback) callback(); //call the callback
     });
+
+    //set a timeout in case crappy browsers like Chrome don't fire the transitionend event e.g. when a parent element is hidden (display:none) mid-transition
+    var duration = transition(currentComputedStyle).duration(property)+100;
+    timeout = window.setTimeout(function() {
+      window.clearTimeout(timeout);
+      if (callback) callback(); //call the callback
+    }, duration);
 
     //set the width/height to the new size to start the transition
     element.style[property] = size;
@@ -105,8 +115,9 @@ function transitionToAuto(element, property, callback) {
   var repaintProperty = getRepaintProperty(property);
 
   //calculate what the width/height of the element will be without transitioning
-  var currentSize, currentComputedSize, finalSize;
-  currentComputedSize = getStyle(element)[property];
+  var currentSize, currentComputedStyle, currentComputedSize, finalSize;
+  currentComputedStyle = getStyle(element);
+  currentComputedSize = currentComputedStyle[property];
   element.style.transitionProperty = 'none'; //disable transitions
   currentSize = element.style[property];
   element.style[property] = 'auto';
@@ -116,23 +127,34 @@ function transitionToAuto(element, property, callback) {
   element.style.transitionProperty = ''; //enable transitions
 
   //don't bother transitioning if we're already there or are mid transition (it'll just cause issues if its run again)
-  if ((element.style[property] === '' && currentComputedSize === finalSize) || element.style[property] === 'auto' || element.style[property] === finalSize) {
+  if ((!isHidden(element) && element.style[property] === '' && currentComputedSize === finalSize) || element.style[property] === 'auto' || (!isHidden(element) && element.style[property] === finalSize)) {
     if (callback) callback(); //call the callback //TODO: if we're mid transition we probably shouldn't call the callback until the transition ends???
     return;
   }
 
-  if (hazTransitions(element) && !isHidden(element)) { //don't use transitions if the element is hidden
+  if (hazTransitions(currentComputedStyle, property) && !isHidden(element)) { //don't use transitions if the element is hidden
+    var timeout;
 
-    //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
-    afterTransition.once(element, function transitionEnd() {
+    function whenTransitionFinished() {
+      window.clearTimeout(timeout);
       element.style.transitionProperty = 'none'; //disable transitions
       element[repaintProperty]; // force repaint
       element.style[property] = 'auto';
       element[repaintProperty]; // force repaint
       element.style.transitionProperty = '';  //enable transitions
-      element.removeEventListener('transitionend', transitionEnd, false)
       if (callback) callback(); //call the callback
+    }
+
+    //after the transition is finished set the width/height of the element to auto (in case content is added to the element without transitioning)
+    afterTransition.once(element, function transitionEnd() {
+      whenTransitionFinished()
     });
+
+    //set a timeout in case crappy browsers like Chrome don't fire the transitionend event e.g. when a parent element is hidden (display:none) mid-transition
+    var duration = transition(currentComputedStyle).duration(property)+100;
+    timeout = window.setTimeout(function() {
+      whenTransitionFinished();
+    }, duration);
 
     //set the width/height of the element to the calculated width/height to start the transition
     element.style[property] = finalSize;
