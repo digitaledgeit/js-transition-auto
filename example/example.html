@@ -4,13 +4,13 @@
     <title></title>
     <style>
 
-        .thing1, .thing2, .thing3 {
+        .thing1, .thing2, .thing3, .thing4 {
             overflow: hidden;
             height: auto;
             background-color: darkseagreen;
-            -moz-transition: height 1.25s;
-            -webkit-transition: height 1.25s;
-            transition: height 1.25s;
+            -moz-transition: height 1.5s;
+            -webkit-transition: height 1.5s;
+            transition: height 1.5s;
         }
 
         .padder {
@@ -45,6 +45,7 @@
             <div class="padder">
                 This is a thing!<br/>
                 It spans over multiple lines.
+                <br/><br/><br/><br/><br/><br/>
             </div>
         </div>
 
@@ -99,13 +100,11 @@
             function toggleHeight() {
                 if (thing.classList.contains('is-invisible')) {
                     transition(thing, 'height', 'auto', function() {
-                        console.log(thing.style.height);
                         console.log('transition-to-auto-finished');
                     });
                     thing.classList.remove('is-invisible');
                 } else {
                     transition(thing, 'height', 0, function() {
-                        console.log(thing.style.height);
                         console.log('transition-to-0-finished');
                     });
                     thing.classList.add('is-invisible');
@@ -148,8 +147,6 @@
                 document.querySelector('.thing3-parent').classList.toggle('hidden');
             }, 250);
         });
-
-
 
     </script>
 </body>
