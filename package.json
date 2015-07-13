@@ -1,0 +1,25 @@
+{
+  "name": "@digitaledgeit/transition-auto",
+  "description": "CSS transitions don't work on elements with height: auto. They can kind of be implemented with max-height: some-fixed-height but the transition timing is never right. This function sets the width/height of an element to be the same as its computed value at auto so that your CSS width/height transition works (add the transition rule in your CSS).",
+  "keywords": [
+    "browser",
+    "transition",
+    "auto"
+  ],
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:digitaledgeit/js-transition-auto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/digitaledgeit/js-transition-auto/issues"
+  },
+  "dependencies": {
+    "@digitaledgeit/transition-info": "^0.4.0",
+    "after-transition": "0.0.4"
+  },
+  "browser": {
+    "transition-info": "@digitaledgeit/transition-info"
+  },
+  "license": "MIT"
+}

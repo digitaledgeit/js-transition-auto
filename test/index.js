@@ -1,5 +1,5 @@
 var assert = require('assert');
-var transition = require('transition-auto');
+var transition = require('..');
 
 var element;
 describe('transition-auto', function() {
